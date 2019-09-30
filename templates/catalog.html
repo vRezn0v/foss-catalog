@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Catalog</title>
+    </head>
+    <body>
+        <h1>FOSS Catalog</h1>
+        {for i in category}
+            <a href="{url_for(viewCategory, category.id = i.category)}">{{i.name}}</a>
+    </body>
+</html>
