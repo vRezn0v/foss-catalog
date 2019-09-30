@@ -5,7 +5,8 @@
     </head>
     <body>
         <h1>FOSS Catalog</h1>
-        {for i in category}
-            <a href="{url_for(viewCategory, category.id = i.category)}">{{i.name}}</a>
+        {% for i in category %}
+            <a href="{{ url_for('viewCategory', category_id=i.id) }}">{{i.name}}</a>
+        {% endfor %}
     </body>
 </html>

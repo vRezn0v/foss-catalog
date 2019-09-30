@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask import jsonify, flash. make_response
+from flask import jsonify, flash, make_response
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import random
@@ -47,15 +47,22 @@ def viewItem(item_id):
 #functions requiring login funtionality (CREATE, UPDATE, DELETE)
 
 @app.route('/catalog/create')
-
+def createItem():
+    return "Created"
+    
 @app.route('/catalog/<int:category_id>/<int:item_id>/edit')
+def editItem():
+    return "Edited"
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/delete')
+def deleteItem():
+    return "Deleted"
 
 #API related functions and paths
 
 @app.route('/catalog/json')
-
-if __name__ == '__main__':
+def json():
+    return "JSON API"
+if __name__ == "__main__":
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

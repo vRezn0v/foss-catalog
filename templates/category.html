@@ -3,5 +3,11 @@
     <head>
         <title>FOSS Catalog</title>
     </head>
-    <body></body>
+    <body>
+        <h1>FOSS Catalog</h1>
+        <h2>{{ category.name }}</h2>
+        {% for i in item %}
+            <a href="#">{{i.name}}</a>
+        {% endfor %} 
+    </body>
 </html>

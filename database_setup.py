@@ -2,7 +2,8 @@ from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base
+Base = declarative_base()
+
 
 class User(Base):
     __tablename__ = 'user'
@@ -22,9 +23,9 @@ class Category(Base):
     @property
     def serialize(self):
         return {
-            'name'      :   self.name
-            'id'        :   self.id
-        }
+            'id'            :   self.id,
+            'name'          :   self.name
+            }
 
 class Item(Base):
     __tablename__ = 'item'
@@ -38,11 +39,11 @@ class Item(Base):
     @property
     def serialize(self):
         return {
-            'name'          :   self.name
-            'id'            :   self.id
-            'category'      :   self.category
-            'uid'           :   self.uid
-            'description'   :   self.description
+            'name'          :   self.name,
+            'id'            :   self.id,
+            'category'      :   self.category,
+            'uid'           :   self.uid,
+            'description'   :   self.description,
         }
 
 engine = create_engine('sqlite:///catalog.db')
