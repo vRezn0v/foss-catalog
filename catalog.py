@@ -46,9 +46,19 @@ def viewItem(item_id):
 
 #functions requiring login funtionality (CREATE, UPDATE, DELETE)
 
-@app.route('/catalog/create')
+@app.route('/catalog/create', methods=['GET', 'POST'])
 def createItem():
-    return "Created"
+    if request.method == 'POST':
+        newItem = Item(
+            #uid=USER ID,
+            name=request.form['name'],
+            category=int(request.form['category']),
+            description=request.form['description']
+        )
+        dbsession.add(newItem)
+        dbsession.flush()
+        dbsession.commit()
+        return redirect('viewItem.html', item = newItem.id)
     
 @app.route('/catalog/<int:category_id>/<int:item_id>/edit')
 def editItem():
