@@ -58,7 +58,10 @@ def createItem():
         dbsession.add(newItem)
         dbsession.flush()
         dbsession.commit()
-        return redirect('viewItem.html', item = newItem.id)
+        return redirect('viewItem.html', item = newItem.id)#DOUBTFUL
+    else:
+        categories = dbsession.query(Category).all()
+        return render_template('create.html')
     
 @app.route('/catalog/<int:category_id>/<int:item_id>/edit')
 def editItem():

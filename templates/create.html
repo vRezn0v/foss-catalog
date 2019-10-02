@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>FOSS Catalog</title>
+    </head>
+    <body>
+        <h1>FOSS Catalog</h1>
+        <h2>Create Item</h2>
+        <form action="{{ target_url }}" method="POST">
+            Name: <input type="text" name="name" required><br>
+            Description: <input type="text" name="description">
+            Category: 
+            <select name="category" required>
+                <option value="1">Audio</option>
+                <option value="2">Browsers</option>
+                <option value="3">Database</option>
+                <option value="4">Developer Tools</option>
+                <option value="5">Gaming</option>
+                <option value="6">Operating Systems</option>
+                <option value="7">Theming/Ricing</option>
+                <option value="8">System</option>
+                <option value="9">Utilities</option>
+            </select>
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>
