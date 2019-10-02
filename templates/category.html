@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>FOSS Catalog</title>
-    </head>
-    <body>
-        <h1>FOSS Catalog</h1>
-        <h2>{{ category.name }}</h2>
-        {% for i in item %}
-            <a href="#">{{i.name}}</a>
-        {% endfor %} 
-    </body>
-</html>
+{% extends "main.html" %}
+{% block content %}
+    <h2>{{ category.name }}</h2>
+    {% for i in item %}
+        <a href="#">{{i.name}}</a>
+    {% endfor %} 
+{% endblock %}
