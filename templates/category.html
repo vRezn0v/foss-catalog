@@ -1,7 +1,9 @@
-{% extends "main.html" %}
+{% extends "catalog.html" %}
 {% block content %}
-    <h2>{{ category.name }}</h2>
+    {{category.name}}
     {% for i in item %}
-        <a href="#">{{i.name}}</a>
+    <div class="cat">
+        <a href="{{url_for('viewItem', item_id = i.id, category_id = i.category)}}">{{i.name}}</a>
+    </div>
     {% endfor %} 
 {% endblock %}

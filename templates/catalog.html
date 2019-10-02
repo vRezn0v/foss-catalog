@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Catalog</title>
-    </head>
-    <body>
-        <h1>FOSS Catalog</h1>
-        {% for i in category %}
-            <a href="{{ url_for('viewCategory', category_id=i.id) }}">{{i.name}}</a>
-        {% endfor %}
-    </body>
-</html>
+{% extends "main.html" %}
+{% block content %}
+    {% for i in category %}
+        <div class='cat'>
+            <a class="cat-view" href="{{ url_for('viewCategory', category_id=i.id) }}">{{i.name}}</a>
+        </div>
+        <br>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,30 @@
+body {
+    font-family: sans-serif;
+    align-content: center;
+}
+
+a {
+    text-decoration: aliceblue;
+    color: black;
+}
+
+#header {
+    color: white;
+    background: blueviolet;
+    padding: 10px;
+    margin-bottom: 30px; 
+}
+
+#header a {
+    color: white;
+}
+
+.cat {
+    border-color: blueviolet;
+    padding: 10px;
+    text-align: center;
+    font-size: 20px;
+    border: solid;
+    width: 30%;
+    justify-content: center;
+}

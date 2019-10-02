@@ -39,10 +39,10 @@ def viewCategory(category_id):
     return render_template('category.html', category = category, item = item)
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/')
-def viewItem(item_id):
-    item = dbsession.query(Item).filter_by(id=item_id)
-
-    return render_template('item.html', item = item)
+def viewItem(category_id, item_id):
+    item = dbsession.query(Item).filter_by(id=item_id).one()
+    category = dbsession.query(Category).filter_by(id=category_id).one()
+    return render_template('item.html', item = item, c = category)
 
 #functions requiring login funtionality (CREATE, UPDATE, DELETE)
 
@@ -50,7 +50,7 @@ def viewItem(item_id):
 def createItem():
     if request.method == 'POST':
         newItem = Item(
-            #uid=USER ID,
+            uid=1, #TODO:Change to accept uid
             name=request.form['name'],
             category=int(request.form['category']),
             description=request.form['description']
@@ -58,9 +58,10 @@ def createItem():
         dbsession.add(newItem)
         dbsession.flush()
         dbsession.commit()
-        return redirect('viewItem.html', item = newItem.id)#DOUBTFUL
+        return "Hecc"
+        #return redirect('viewItem.html', item = newItem.id)#DOUBTFUL
     else:
-        categories = dbsession.query(Category).all()
+        #categories = dbsession.query(Category).all()
         return render_template('create.html')
     
 @app.route('/catalog/<int:category_id>/<int:item_id>/edit')
@@ -78,4 +79,4 @@ def json():
     return "JSON API"
 if __name__ == "__main__":
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8001)
