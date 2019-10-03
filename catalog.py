@@ -49,6 +49,7 @@ def viewItem(category_id, item_id):
 
 @app.route('/catalog/create', methods=['GET', 'POST'])
 def createItem():
+    #requires login
     if request.method == 'POST':
         newItem = Item(
             uid=1, #TODO:Change to accept uid
@@ -66,13 +67,46 @@ def createItem():
         #categories = dbsession.query(Category).all()
         return render_template('create.html')
     
-@app.route('/catalog/<int:category_id>/<int:item_id>/edit')
-def editItem():
-    return "Edited"
+@app.route('/catalog/<int:category_id>/<int:item_id>/edit',methods=['GET', 'POST'])
+def editItem(category_id, item_id):
+    #requires login
+    item = dbsession.query(Item).filter_by(id=item_id).one()
+    category = dbsession.query(Category).filter_by(id=item.category).one()
 
-@app.route('/catalog/<int:category_id>/<int:item_id>/delete')
-def deleteItem():
-    return "Deleted"
+    if request.method  == 'POST':
+        if request.form['name']:
+            item.name = request.form['name']
+        if request.form['description']:
+            item.description = request.form['description']
+        if request.form['category']:
+            item.category = request.form['category']
+        if request.form['url']:
+            item.url = request.form['url']
+        
+        dbsession.add(item)
+        dbsession.commit()
+        flash("Item Updated Successfully.")
+        return redirect(
+            url_for('viewItem', category_id=category.id, item_id=item.id)
+        )
+    else:
+        return render_template('edit.html', category=category, item=item)
+
+
+@app.route('/catalog/<int:category_id>/<int:item_id>/delete', requests=['GET', 'POST'])
+def deleteItem(item_id):
+    #requires login
+    item = dbsession.query(Item).filter_by(id=item_id).one()
+    category = dbsession.query(Category).filter_by(id=item.category).one()
+
+    if request.method == 'POST':
+        dbsession.delete(Item)
+        dbsession.commit()
+        flash('Deletion Success.')
+        return redirect(url_for('viewCategory', category_id=category.id))
+    
+    else:
+        return render_template('delete.html', category=category, item=item)
 
 #API related functions and paths
 
