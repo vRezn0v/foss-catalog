@@ -93,7 +93,7 @@ def editItem(category_id, item_id):
         return render_template('edit.html', category=category, item=item)
 
 
-@app.route('/catalog/<int:category_id>/<int:item_id>/delete', requests=['GET', 'POST'])
+@app.route('/catalog/<int:category_id>/<int:item_id>/delete', methods=['GET', 'POST'])
 def deleteItem(item_id):
     #requires login
     item = dbsession.query(Item).filter_by(id=item_id).one()
