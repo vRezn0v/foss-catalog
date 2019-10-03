@@ -21,6 +21,7 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 dbsession = DBSession()
+dbsession.autoflush = True
 
 #READ fuctions
 
@@ -58,8 +59,9 @@ def createItem():
         dbsession.add(newItem)
         dbsession.flush()
         dbsession.commit()
-        return "Hecc"
-        #return redirect('viewItem.html', item = newItem.id)#DOUBTFUL
+        return redirect(
+            url_for('viewItem', item_id = newItem.id, category_id = newItem.category)
+        )
     else:
         #categories = dbsession.query(Category).all()
         return render_template('create.html')
@@ -77,6 +79,7 @@ def deleteItem():
 @app.route('/catalog/json')
 def json():
     return "JSON API"
+    
 if __name__ == "__main__":
     app.debug = True
     app.run(host='0.0.0.0', port=8001)

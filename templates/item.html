@@ -1,13 +1,13 @@
 {% extends 'main.html' %}
 {% block content %}
 {{c.name}}/{{item.name}}
-<button>Edit</button>
-<br>
-<button>Delete</button>
+
+<button class="op">Edit</button>
+<button class="op">Delete</button>
 <br>
 {{item.name}}
 <br>
-{{c.name}}
+<a href="{{ url_for('viewCategory', category_id = c.id) }}">{{c.name}}</a>
 <br>
 {{item.description}}
 <br>

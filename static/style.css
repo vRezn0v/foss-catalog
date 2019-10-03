@@ -5,22 +5,35 @@ body {
 
 a {
     text-decoration: aliceblue;
-    color: blueviolet;
+    color: black;
 }
 
 #header {
     color: white;
     background: blueviolet;
     padding: 10px;
-    margin-bottom: 30px; 
+    height: 50px; 
 }
 
 #header h1 {
-    width: 80%;
+    color: black;
+    margin: 0;
+    float: left;
 }
 
-#header a {
-    color: white;
+#header button {
+    float: right;
+    margin: 0;
+}
+
+#content {
+    margin: 30px;
+}
+
+.op {
+    float: right;
+    margin-right: 10px;
+    border: 50px;
 }
 
 .cat {
