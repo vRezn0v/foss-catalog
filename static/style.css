@@ -1,6 +1,6 @@
 body {
     font-family: sans-serif;
-    align-content: center;
+    align-items: center;
 }
 
 a {
@@ -16,14 +16,15 @@ a {
 }
 
 #header h1 {
+    text-align: center;
     color: black;
     margin: 0;
     float: left;
 }
 
 #header button {
-    float: right;
     margin: 0;
+    float: right;
 }
 
 #content {
@@ -31,9 +32,13 @@ a {
 }
 
 .op {
-    float: right;
+    border: solid;
+    border-color: white;
     margin-right: 10px;
     border: 50px;
+    width: 150px;
+    height: 50px;
+    background-color: blueviolet;
 }
 
 .cat {
@@ -43,4 +48,10 @@ a {
     font-size: 20px;
     border: solid;
     width: 40%;
+}
+
+#itemview {
+    width: 100%;
+    border: solid;
+    border-style: solid;
 }

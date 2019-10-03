@@ -34,7 +34,7 @@ def viewCatalog():
 
 @app.route('/catalog/<int:category_id>/')
 def viewCategory(category_id):
-    category = dbsession.query(Category).filter_by(id=category_id)
+    category = dbsession.query(Category).filter_by(id=category_id).one()
     item = dbsession.query(Item).filter_by(category=category_id)
 
     return render_template('category.html', category = category, item = item)
@@ -58,7 +58,6 @@ def createItem():
             description=request.form['description']
         )
         dbsession.add(newItem)
-        dbsession.flush()
         dbsession.commit()
         return redirect(
             url_for('viewItem', item_id = newItem.id, category_id = newItem.category)

@@ -1,16 +1,28 @@
 {% extends 'main.html' %}
 {% block content %}
 {{c.name}}/{{item.name}}
+<br>
+<button class="op"><a href="{{url_for('editItem', category_id = c.id, item_id = item.id)}}">Edit</a></button>
+<button class="op"><a href="#">Delete</a></button>
 
-<button class="op">Edit</button>
-<button class="op">Delete</button>
-<br>
-{{item.name}}
-<br>
-<a href="{{ url_for('viewCategory', category_id = c.id) }}">{{c.name}}</a>
-<br>
-{{item.description}}
-<br>
-{{item.url}}
+<table id="itemview">
+        <tr>
+            <th>Name</th>
+            <td>{{item.name}}</td>
+        </tr>
+        <tr>
+            <th>Category</th>
+            <td><a href="{{ url_for('viewCategory', category_id = c.id) }}">{{c.name}}</a></td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{item.description}}</td>
+        </tr>
+        <tr>
+            <th>URL</th>
+            <td>{{item.url}}</td>
+        </tr>
+</table>
+
 
 {% endblock %}

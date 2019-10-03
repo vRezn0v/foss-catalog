@@ -1,6 +1,6 @@
-{% extends "catalog.html" %}
+{% extends "main.html" %}
 {% block content %}
-    {{category.name}}
+    <h2>{{category.name}}</h2>
     {% for i in item %}
     <div class="cat">
         <a href="{{url_for('viewItem', item_id = i.id, category_id = i.category)}}">{{i.name}}</a>
