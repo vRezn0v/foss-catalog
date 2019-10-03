@@ -5,7 +5,7 @@ body {
 
 a {
     text-decoration: aliceblue;
-    color: black;
+    color: blueviolet;
 }
 
 #header {
@@ -13,6 +13,10 @@ a {
     background: blueviolet;
     padding: 10px;
     margin-bottom: 30px; 
+}
+
+#header h1 {
+    width: 80%;
 }
 
 #header a {
@@ -25,6 +29,5 @@ a {
     text-align: center;
     font-size: 20px;
     border: solid;
-    width: 30%;
-    justify-content: center;
+    width: 40%;
 }
