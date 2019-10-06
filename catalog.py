@@ -14,8 +14,6 @@ import requests
 
 app = Flask(__name__)
 
-
-
 engine = create_engine("sqlite:///catalog.db")
 Base.metadata.bind = engine
 
@@ -23,8 +21,10 @@ DBSession = sessionmaker(bind=engine)
 dbsession = DBSession()
 dbsession.autoflush = True
 
-#READ fuctions
+#Login and session functions
 
+
+#READ functions
 @app.route('/')
 @app.route('/catalog/')
 def viewCatalog():
@@ -45,7 +45,7 @@ def viewItem(category_id, item_id):
     category = dbsession.query(Category).filter_by(id=category_id).one()
     return render_template('item.html', item = item, c = category)
 
-#functions requiring login funtionality (CREATE, UPDATE, DELETE)
+#functions requiring login functionality (CREATE, UPDATE, DELETE)
 
 @app.route('/catalog/create', methods=['GET', 'POST'])
 def createItem():
@@ -58,12 +58,12 @@ def createItem():
             description=request.form['description']
         )
         dbsession.add(newItem)
+        dbsession.flush()
         dbsession.commit()
         return redirect(
             url_for('viewItem', item_id = newItem.id, category_id = newItem.category)
         )
     else:
-        #categories = dbsession.query(Category).all()
         return render_template('create.html')
     
 @app.route('/catalog/<int:category_id>/<int:item_id>/edit',methods=['GET', 'POST'])
@@ -73,6 +73,7 @@ def editItem(category_id, item_id):
     category = dbsession.query(Category).filter_by(id=item.category).one()
 
     if request.method  == 'POST':
+        item.id = item.id
         if request.form['name']:
             item.name = request.form['name']
         if request.form['description']:
@@ -93,7 +94,7 @@ def editItem(category_id, item_id):
 
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/delete', methods=['GET', 'POST'])
-def deleteItem(item_id):
+def deleteItem(category_id, item_id):
     #requires login
     item = dbsession.query(Item).filter_by(id=item_id).one()
     category = dbsession.query(Category).filter_by(id=item.category).one()
@@ -110,7 +111,7 @@ def deleteItem(item_id):
 #API related functions and paths
 
 @app.route('/catalog/json')
-def json():
+def catalogJSON():
     return "JSON API"
     
 if __name__ == "__main__":
