@@ -1,13 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask import jsonify, flash, make_response
+from flask import session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 import random
 import string
+
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+import httplib2
+import json
+import requests
+
 from database_setup import Base, User, Category, Item
 
-
 app = Flask(__name__)
+
+CLIENT_ID = json.loads(
+    open('client_secrets.json', 'r').read())['web']['client_id']
 
 engine = create_engine("sqlite:///catalog.db")
 Base.metadata.bind = engine
@@ -16,10 +27,39 @@ DBSession = sessionmaker(bind=engine)
 dbsession = DBSession()
 dbsession.autoflush = True
 
+#Anti-Forgery Token
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+        for x in range(32))
+    session['state'] = state
+    return render_template('login.html', client_id=CLIENT_ID, STATE=state)
+
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+    if requests.args.get('state') != session['state']:
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    code = request.data
+
+    try:
+        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow.redirect_uri = 'postmessage'
+        credentials = oauth_flow.step2_exchange(code)
+    except FlowExchangeError:
+        response = make_response(
+            json.dumps('Failed to upgrade the auth code.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    
 #Error Handler
 @app.errorhandler(404)
 def not_found(error):
     return render_template("404err.html")
+
+#User related functions
 
 #READ functions
 @app.route('/')
@@ -117,4 +157,4 @@ def catalogJSON():
 if __name__ == "__main__":
     app.secret_key = "peterparkerisspiderman"
     app.debug = True
-    app.run(host='0.0.0.0', port=8001)
+    app.run(host='0.0.0.0', port=5000)
