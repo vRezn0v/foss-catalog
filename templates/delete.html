@@ -1,3 +1,8 @@
 {% extends "main.html" %}
 {% block content %}
+<p>Confirm deletion of {{item.name}}</p>
+<form method="POST">
+    <button type="submit">Confirm</button>
+    <button type="button"><a href="{{url_for('viewItem', category_id = category.id, item_id = item.id)}}">No</a></button>
+    </form>
 {% endblock %}

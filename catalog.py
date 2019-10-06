@@ -6,11 +6,6 @@ import random
 import string
 from database_setup import Base, User, Category, Item
 
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
-import httplib2
-import json
-import requests
 
 app = Flask(__name__)
 
@@ -21,19 +16,23 @@ DBSession = sessionmaker(bind=engine)
 dbsession = DBSession()
 dbsession.autoflush = True
 
-#Login and session functions
-
+#Error Handler
+@app.errorhandler(404)
+def not_found(error):
+    return render_template("404err.html")
 
 #READ functions
 @app.route('/')
 @app.route('/catalog/')
 def viewCatalog():
+    """Reads categories from database and displays them."""
     category = dbsession.query(Category).all()
 
     return render_template('catalog.html', category = category)
 
 @app.route('/catalog/<int:category_id>/')
 def viewCategory(category_id):
+    """Displays Items Contained in a Category"""
     category = dbsession.query(Category).filter_by(id=category_id).one()
     item = dbsession.query(Item).filter_by(category=category_id)
 
@@ -41,6 +40,7 @@ def viewCategory(category_id):
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/')
 def viewItem(category_id, item_id):
+    """Displays Information on a Specific Item"""
     item = dbsession.query(Item).filter_by(id=item_id).one()
     category = dbsession.query(Category).filter_by(id=category_id).one()
     return render_template('item.html', item = item, c = category)
@@ -100,7 +100,7 @@ def deleteItem(category_id, item_id):
     category = dbsession.query(Category).filter_by(id=item.category).one()
 
     if request.method == 'POST':
-        dbsession.delete(Item)
+        dbsession.delete(item)
         dbsession.commit()
         flash('Deletion Success.')
         return redirect(url_for('viewCategory', category_id=category.id))
@@ -115,5 +115,6 @@ def catalogJSON():
     return "JSON API"
     
 if __name__ == "__main__":
+    app.secret_key = "peterparkerisspiderman"
     app.debug = True
     app.run(host='0.0.0.0', port=8001)

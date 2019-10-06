@@ -3,7 +3,7 @@
 {{c.name}}/{{item.name}}
 <br>
 <button class="op"><a href="{{url_for('editItem', category_id = c.id, item_id = item.id)}}">Edit</a></button>
-<button class="op"><a href="#">Delete</a></button>
+<button class="op"><a href="{{url_for('deleteItem', category_id = c.id, item_id = item.id)}}">Delete</a></button>
 
 <table id="itemview">
         <tr>
