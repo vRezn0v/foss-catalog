@@ -1,9 +1,11 @@
 {% extends "main.html" %}
 {% block content %}
     {% for i in category %}
-        <div class='cat'>
-            <a class="cat-view" href="{{ url_for('viewCategory', category_id=i.id) }}">{{i.name}}</a>
-        </div>
+        <a href="{{ url_for('viewCategory', category_id=i.id) }}">
+            <div class='cat'>
+                {{i.name}}
+            </div>
+        </a>
         <br>
     {% endfor %}
 {% endblock %}

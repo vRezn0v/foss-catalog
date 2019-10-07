@@ -1,21 +1,20 @@
 {% extends "main.html" %}
 {% block content %}
-<h2>Create Item</h2>
     <form class="opform" action="{{ target_url }}" method="POST">
-        Name: <input type="text" name="name" required><br>
-        Description: <input type="text" name="description">
-        Category: 
+        <legend><h2>Create Item</h2></legend>
+        Name:<br>
+        <input type="text" name="name" placeholder="Name" required><br>
+        Description:<br>
+        <input type="text" name="description" placeholder="Description"><br>
+        Category: <br>
         <select name="category" required>
-            <option value="1">Audio</option>
-            <option value="2">Browsers</option>
-            <option value="3">Database</option>
-            <option value="4">Developer Tools</option>
-            <option value="5">Gaming</option>
-            <option value="6">Operating Systems</option>
-            <option value="7">Theming/Ricing</option>
-            <option value="8">System</option>
-            <option value="9">Utilities</option>
-        </select>
-        <input type="submit" value="Submit">
+            <option value="0">---</option>
+            {% for i in c %}
+                <option value="{{i.id}}">{{i.name}}</option>
+            {% endfor %}
+        </select><br>
+        Url:<br>
+        <input type="url" name="url" placeholder="URL"><br><br>
+        <input type="submit" value="Submit" class="op">
     </form>
 {% endblock %}

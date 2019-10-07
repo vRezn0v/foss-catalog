@@ -179,6 +179,8 @@ def viewItem(category_id, item_id):
 @app.route('/catalog/create', methods=['GET', 'POST'])
 def createItem():
     #requires login
+    categories =  dbsession.query(Category).all()
+
     if request.method == 'POST':
         newItem = Item(
             uid=1, #TODO:Change to accept uid
@@ -193,16 +195,16 @@ def createItem():
             url_for('viewItem', item_id = newItem.id, category_id = newItem.category)
         )
     else:
-        return render_template('create.html')
+        return render_template('create.html', c = categories)
     
 @app.route('/catalog/<int:category_id>/<int:item_id>/edit',methods=['GET', 'POST'])
 def editItem(category_id, item_id):
     #requires login
     item = dbsession.query(Item).filter_by(id=item_id).one()
     category = dbsession.query(Category).filter_by(id=item.category).one()
+    c = dbsession.query(Category).all()
 
     if request.method  == 'POST':
-        item.id = item.id
         if request.form['name']:
             item.name = request.form['name']
         if request.form['description']:
@@ -211,7 +213,6 @@ def editItem(category_id, item_id):
             item.category = request.form['category']
         if request.form['url']:
             item.url = request.form['url']
-        
         dbsession.add(item)
         dbsession.commit()
         flash("Item Updated Successfully.")
@@ -219,7 +220,7 @@ def editItem(category_id, item_id):
             url_for('viewItem', category_id=category.id, item_id=item.id)
         )
     else:
-        return render_template('edit.html', category=category, item=item)
+        return render_template('edit.html', category=category, item=item, categories = c)
 
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/delete', methods=['GET', 'POST'])
