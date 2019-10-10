@@ -35,7 +35,8 @@ class Item(Base):
     description = Column(String(250))
     category = Column(Integer, ForeignKey('category.id'), nullable = False)
     uid = Column(Integer, ForeignKey('user.id'), nullable = False)
-
+    url = Column(String(250))
+    
     @property
     def serialize(self):
         return {
@@ -44,6 +45,7 @@ class Item(Base):
             'category'      :   self.category,
             'uid'           :   self.uid,
             'description'   :   self.description,
+            'url'           :   self.url;
         }
 
 engine = create_engine('sqlite:///catalog.db')

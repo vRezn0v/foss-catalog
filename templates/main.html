@@ -7,8 +7,17 @@
     <body>
         <div id="header">
             <h1><a href="{{ url_for('viewCatalog') }}">FOSS Catalog</a></h1>
-            <button class="op">Login</button>
+            <a href="{{url_for('showLogin')}}"><button class="op">Login</button></a>
             <!-- Conditional login/create button-->
+        </div>
+        <div class="message">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p> {{ message }} </p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         </div>
         <div id="content">
             {% block content %}
