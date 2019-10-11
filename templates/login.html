@@ -29,20 +29,19 @@
         </div>
         <div id="content">
             <button id="signinButton" class="op">Google Signin</button>
-
             <div id="result"></div>
             <script>
-                $('#signinButton').click(function () {
-                    function signInCallback(authResult) {
-                        if (authResult['code']) {
-                            $('#signinButton').attr('style', 'display:none');
+                $('#signinButton').click(function(){
+                    function signInCallback(authResult){
+                        if (authResult['code']){
+                            $('signinButton').attr('style', 'display: none');
                             $.ajax({
                                 type: 'POST',
                                 url: '/gconnect?state={{STATE}}',
                                 processData: false,
                                 data: authResult['code'],
                                 contentType: 'application/octet-stream; charset=utf-8',
-                                success: function (result) {
+                                success: function(result){
                                     if (result) {
                                         $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...');
                                         setTimeout(function () {
