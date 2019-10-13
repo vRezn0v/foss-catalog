@@ -256,10 +256,28 @@ def deleteItem(category_id, item_id):
 
 #API related functions and paths
 
-@app.route('/catalog/json')
+@app.route('/json/index')
 def catalogJSON():
-    return "JSON API"
-    
+    categories = dbsession.query(Category).all()
+    result = []
+    for c in categories:
+        result.append(c.serialize)
+    return jsonify(Categories=result)
+
+@app.route('/json/<int:category_id>')
+def categoryJSON(category_id):
+    items = dbsession.query(Item).filter_by(category=category_id).all()
+    result = []
+    for i in items:
+        result.append(i.serialize)
+    return jsonify(Items=result)
+
+@app.route('/json/<int:category_id>/<int:item_id>')
+def itemJSON(category_id, item_id):
+    item = dbsession.query(Item).filter_by(id=item_id).one()
+    result = item.serialize
+    return jsonify(Item=result)
+
 if __name__ == "__main__":
     app.secret_key = "peterparkerisspiderman"
     app.debug = True

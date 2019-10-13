@@ -29,7 +29,6 @@
         </div>
         <div id="content">
             <button id="signinButton" class="op">Google Signin</button>
-            <div id="result"></div>
             <script>
                 $('#signinButton').click(function(){
                     function signInCallback(authResult){
@@ -63,7 +62,7 @@
             <script>
                 window.fbAsyncInit = function() {
                     FB.init({
-                        appId      : '846524132078825',
+                        appId      : '2468015700144515',
                         cookie     : true,  // enable cookies to allow the server to access 
                                             // the session
                         xfbml      : true,  // parse social plugins on this page
@@ -97,7 +96,7 @@
                         if (result) {
                             $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
                             setTimeout(function() {
-                            window.location.href = "/restaurant";
+                            window.location.href = "/catalog";
                             }, 4000);
             
                         } else {
@@ -108,13 +107,13 @@
                     });
                 }
             </script>
-  
-  
-            <button>
-                <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
-                    <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
-                </fb:login-button>
-            </button>
+            
+            <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();" id="op">
+                <a href='javascript:sendTokenToServer()'>Facebook Sign In</a>
+            </fb:login-button>
+            
+            <div id="result"></div>
+
         </div>
     </body>
 </html>
