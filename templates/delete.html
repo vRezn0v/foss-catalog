@@ -1,8 +1,8 @@
 {% extends "main.html" %}
 {% block content %}
-<p>Confirm deletion of {{item.name}}</p>
+<p>Confirm deletion of <b>{{item.name}}</b></p>
 <form method="POST">
-    <button type="submit">Confirm</button>
-    <button type="button"><a href="{{url_for('viewItem', category_id = category.id, item_id = item.id)}}">No</a></button>
+    <button type="submit" class="op" style="background-color: tomato">Confirm</button>
+    <button type="button" class="op"><a href="{{url_for('viewItem', category_id = category.id, item_id = item.id)}}">No</a></button>
     </form>
 {% endblock %}

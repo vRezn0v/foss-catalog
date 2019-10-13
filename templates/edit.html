@@ -1,23 +1,20 @@
 {% extends "main.html" %}
 {% block content %}
 <form class="opform" action="{{ target_url }}" method="POST">
-        Name: <input type="text" name="name" placeholder="{{item.name}}"><br>
-        Description: <input type="text" name="description" placeholder="{{item.description}}"><br>
-        Category: 
+    <legend><h2>Edit Item: {{item.name}}</h2></legend>
+        Name: <input type="text" name="name" placeholder="{{item.name}}"><br><br>
+        Description: <input type="text" name="description" placeholder="{{item.description}}"><br><br>
+        Category: <br>
         <select name="category">
-            <option value="0">---</option>
-            <option value="1">Audio</option>
-            <option value="2">Browsers</option>
-            <option value="3">Database</option>
-            <option value="4">Developer Tools</option>
-            <option value="5">Gaming</option>
-            <option value="6">Operating Systems</option>
-            <option value="7">Theming/Ricing</option>
-            <option value="8">System</option>
-            <option value="9">Utilities</option>
-        </select><br>
-        Url:<input type="url" name="url" placeholder="{{item.url}}">
-        <input type="submit" value="Submit">
+            <option value="{{category.id}}">{{category.name}}</option>
+            {% for c in categories %}
+                <option value="{{c.id}}">{{c.name}}</option>
+            {% endfor %}
+        </select><br><br>
+        Url:<br>
+        <input type="text" name="url" placeholder="{{item.url}}">
+        <br><br>
+        <input type="submit" value="Submit" class="op">
     </form>
 
 {% endblock %}
