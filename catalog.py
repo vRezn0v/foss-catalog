@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 import random
 import string
-
+from functools import wraps
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
@@ -95,8 +95,27 @@ def fbconnect():
     output += session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
 
-    flash("Now logged in as %s" % session['username'])
+    flash("Welcome %s" % session['username'])
     return output
+@app.route('/logout')
+def logout():
+    if session:
+        session.clear()
+        flash("Logout Successful")
+        return redirect(url_for('viewCatalog'))
+    else:
+        flash("Error: No User Logged In.")
+        return redirect(url_for('viewCatalog'))
+
+def fblogout():
+    facebook_id = session['facebook_id']
+    access_token = session['facebook_token']['access_token']
+    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (
+        facebook_id, access_token)
+    h = httplib2.Http()
+    flash("Logged out successfully.")
+    h.request(url, 'DELETE')
+
 '''
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -165,12 +184,24 @@ def getUserID(email):
     except:
         return None
 
+#Login Condition
+def login_required(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            flash('Login Required to Continue.')
+            return redirect(url_for('viewCatalog'))
+        return func(*args, **kwargs)
+    return decorated_function
+
 #READ functions
 @app.route('/')
 @app.route('/catalog/')
 def viewCatalog():
     """Reads categories from database and displays them."""
     category = dbsession.query(Category).all()
+
+    print session['facebook_id']
 
     return render_template('catalog.html', category = category)
 
@@ -192,13 +223,14 @@ def viewItem(category_id, item_id):
 #functions requiring login functionality (CREATE, UPDATE, DELETE)
 
 @app.route('/catalog/create', methods=['GET', 'POST'])
+@login_required
 def createItem():
-    #requires login
     categories =  dbsession.query(Category).all()
-
+    if session['provider'] == 'facebook':
+        val = 'facebook_id'
     if request.method == 'POST':
         newItem = Item(
-            uid=1, #TODO:Change to accept uid
+            uid=session[val], #TODO:Change to accept uid
             name=request.form['name'],
             category=int(request.form['category']),
             description=request.form['description'],
@@ -214,11 +246,20 @@ def createItem():
         return render_template('create.html', c = categories)
     
 @app.route('/catalog/<int:category_id>/<int:item_id>/edit',methods=['GET', 'POST'])
+@login_required
 def editItem(category_id, item_id):
-    #requires login
     item = dbsession.query(Item).filter_by(id=item_id).one()
     category = dbsession.query(Category).filter_by(id=item.category).one()
     c = dbsession.query(Category).all()
+
+    if session['provider'] == 'facebook':
+        val = 'facebook_id'
+
+    if int(session[val]) != item.uid: 
+        flash("You are not authorized to perform this action.")
+        return redirect(
+            url_for('viewItem', category_id=category.id, item_id=item.id)
+        )
 
     if request.method  == 'POST':
         if request.form['name']:
@@ -240,19 +281,28 @@ def editItem(category_id, item_id):
 
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/delete', methods=['GET', 'POST'])
+@login_required
 def deleteItem(category_id, item_id):
-    #requires login
     item = dbsession.query(Item).filter_by(id=item_id).one()
     category = dbsession.query(Category).filter_by(id=item.category).one()
 
-    if request.method == 'POST':
-        dbsession.delete(item)
-        dbsession.commit()
-        flash('Deletion Success.')
-        return redirect(url_for('viewCategory', category_id=category.id))
-    
+    if session['provider'] == 'facebook':
+        val = 'facebook_id'
+
+    if int(session[val]) != item.uid: 
+        flash("You are not authorized to perform this action.")
+        return redirect(
+            url_for('viewItem', category_id=category.id, item_id=item.id)
+        )
     else:
-        return render_template('delete.html', category=category, item=item)
+        if request.method == 'POST':
+            dbsession.delete(item)
+            dbsession.commit()
+            flash('Deletion Success.')
+            return redirect(url_for('viewCategory', category_id=category.id))
+
+        else:
+            return render_template('delete.html', category=category, item=item)
 
 #API related functions and paths
 
@@ -282,3 +332,4 @@ if __name__ == "__main__":
     app.secret_key = "peterparkerisspiderman"
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
+    
