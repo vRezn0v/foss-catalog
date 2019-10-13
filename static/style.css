@@ -44,16 +44,6 @@ a {
     background-color: blueviolet;
 }
 
-#flog {
-    border: solid;
-    border-color: white;
-    border: 50px;
-    width: 150px;
-    height: 50px;
-    background-color: blueviolet;
-    text-align: center;
-}
-
 .cat {
     border-style: ridge;
     background-color: blueviolet;

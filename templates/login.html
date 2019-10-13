@@ -3,6 +3,8 @@
     <head>
         <title>FOSS Catalog</title>
         <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+        <meta name="google-signin-client_id" content="{{client_id}}">
+
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
         <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
         <script>
@@ -28,7 +30,7 @@
             {% endwith %}
         </div>
         <div id="content">
-            <button id="signinButton" class="op">Google Signin</button>
+            <div id="my-signin2"></div>
             <script>
                 $('#signinButton').click(function(){
                     function signInCallback(authResult){
@@ -113,6 +115,28 @@
             </fb:login-button>
             
             <div id="result"></div>
+
+            <script>
+                function onSuccess(googleUser) {
+                  console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+                }
+                function onFailure(error) {
+                  console.log(error);
+                }
+                function renderButton() {
+                  gapi.signin2.render('my-signin2', {
+                    'scope': 'profile email',
+                    'width': 240,
+                    'height': 50,
+                    'longtitle': true,
+                    'theme': 'dark',
+                    'onsuccess': onSuccess,
+                    'onfailure': onFailure
+                  });
+                }
+              </script>
+            
+            <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 
         </div>
     </body>

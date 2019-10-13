@@ -97,6 +97,33 @@ def fbconnect():
 
     flash("Welcome %s" % session['username'])
     return output
+
+'''@app.route('/gconnect', methods=['POST'])
+def gconnect():
+    if request.args.get('state') != session['state']:
+        response = make_response(json.dumps('Invalid State Parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    
+    access_token = request.data
+    print "access token recieved %s " %access_token
+
+    auth_flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        'client_secrets.json',
+        ['securetoken.googleapis.com'])
+    auth_flow.redirect_uri = url_for('gconnect', _external=True)
+
+    credentials = auth_flow.fetch_token(code)
+    authorization_url, state = auth_flow.authorization_url(
+        access_type='offline',
+        prompt='consent',
+        include_granted_scopes='true')
+
+    session['state'] = state
+    return redirect(authorization_url)
+'''
+
+#Logout Routes
 @app.route('/logout')
 def logout():
     if session:
@@ -115,47 +142,6 @@ def fblogout():
     h = httplib2.Http()
     flash("Logged out successfully.")
     h.request(url, 'DELETE')
-
-'''
-@app.route('/gconnect', methods=['POST'])
-def gconnect():
-    if request.args.get('state') != session['state']:
-        response = make_response(json.dumps('Invalid State Parameter.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    
-    code = request.data
-
-    auth_flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        'client_secrets.json',
-        ['securetoken.googleapis.com'])
-    auth_flow.redirect_uri = url_for('gconnect', _external=True)
-
-    credentials = auth_flow.fetch_token(code)
-    authorization_url, state = auth_flow.authorization_url(
-        access_type='offline',
-        prompt='consent',
-        include_granted_scopes='true')
-
-    session['state'] = state
-    return redirect(authorization_url)
-
-    #token = credentials.access_token
-    #url = 'https://accounts.google.com/o/oauth2/v2/auth/'
-
-@app.route('/oauth2callback')
-def oauth2callback():
-    state  = session['state']
-    auth_flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            'client_secrets.json',
-            ['securetoken.googleapis.com'])
-    auth_flow.redirect_uri = url_for('oauth2callback', _external=True)
-    auth_response = request.url
-    auth_flow.fetch_token(authorization_response=auth_response)
-    credentials = flow.credentials
-    session['credetials']  = credentials_to_dict(credentials)
-'''
-
 
 #Error Handler
 @app.errorhandler(404)
@@ -201,8 +187,6 @@ def viewCatalog():
     """Reads categories from database and displays them."""
     category = dbsession.query(Category).all()
 
-    print session['facebook_id']
-
     return render_template('catalog.html', category = category)
 
 @app.route('/catalog/<int:category_id>/')
@@ -228,6 +212,7 @@ def createItem():
     categories =  dbsession.query(Category).all()
     if session['provider'] == 'facebook':
         val = 'facebook_id'
+    
     if request.method == 'POST':
         newItem = Item(
             uid=session[val], #TODO:Change to accept uid
@@ -255,7 +240,7 @@ def editItem(category_id, item_id):
     if session['provider'] == 'facebook':
         val = 'facebook_id'
 
-    if int(session[val]) != item.uid: 
+    if int(session[val]) != item.uid:
         flash("You are not authorized to perform this action.")
         return redirect(
             url_for('viewItem', category_id=category.id, item_id=item.id)
