@@ -1,16 +1,17 @@
 body {
-    font-family: sans-serif;
+    font-family: monospace;
     align-items: center;
+    background-color: rgba(0, 0, 0, 0.61);
 }
 
 a {
     text-decoration: aliceblue;
-    color: black;
+    color: white;
 }
 
 #header {
     color: white;
-    background: blueviolet;
+    background: rgb(0, 137, 228);
     padding: 20px;
     padding-top: 30px;
     height: 50px; 
@@ -41,21 +42,22 @@ a {
     border: 50px;
     width: 150px;
     height: 50px;
-    background-color: blueviolet;
+    background-color: rgb(0, 137, 228);
 }
 
 .cat {
     border-style: ridge;
-    background-color: blueviolet;
+    background-color: rgb(0, 137, 228);
     border-radius: 5px;
     padding: 10px;
     margin-bottom: 10px;
     text-align: center;
     font-size: 30px;
-    border: solid;    
+    border: solid;
+    border-color: blueviolet;
 }
 
-.cat :hover {
+.cat:hover {
     background-color: black;
     color: blueviolet;
 }
@@ -88,8 +90,10 @@ a {
 }
 
 .message {
-    background-color: green;
+    background-color: rgb(38, 206, 38);
     color: white;
     width: 100%;
-    margin: -10px -10px 0px -10px;
+    padding:2.5px;
+    margin-left: -10px;
+    padding-left: 10px;;
 }
