@@ -22,21 +22,23 @@ CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 
 
-engine = create_engine("sqlite:///catalog.db", 
-                        connect_args={'check_same_thread':False})
+engine = create_engine("sqlite:///catalog.db",
+                       connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 dbsession = DBSession()
 dbsession.autoflush = True
 
-#Anti-Forgery Token
+
+# Anti-Forgery Token
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-        for x in range(32))
+                    for x in range(32))
     session['state'] = state
     return render_template('login.html', client_id=CLIENT_ID, STATE=state)
+
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -44,7 +46,7 @@ def gconnect():
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    
+
     if not request.headers.get('X-Requested-With'):
         abort(403)
 
@@ -61,7 +63,6 @@ def gconnect():
 
     session['name'] = credentials.id_token['name']
     session['email'] = credentials.id_token['email']
-    #session['access']
     user_id = getUserID(session['email'])
     if not user_id:
         user_id = createUser(session)
@@ -71,11 +72,11 @@ def gconnect():
     output += '<h1>Welcome, '
     output += session['name']
     output += '!</h1>'
-    flash("you are now logged in as %s"%session['name'])
+    flash("you are now logged in as %s" % session['name'])
     return output
-    
-    
-#Logout Routes
+
+
+# Logout Routes
 @app.route('/gdisconnect')
 def gdisconnect():
     if session:
@@ -90,24 +91,26 @@ def gdisconnect():
         return redirect(url_for('viewCatalog'))
 
 
-#Error Handler
+# Error Handler
 @app.errorhandler(404)
 def not_found(error):
     return render_template("404err.html")
 
-#User related functions
 
+# User related functions
 def createUser(session):
-    newUser =  User(name=session['name'],
-                    email=session['email'])
+    newUser = User(name=session['name'],
+                   email=session['email'])
     dbsession.add(newUser)
     dbsession.commit()
     user = dbsession.query(User).filter_by(email=session['email']).one()
     return user.id
 
+
 def getUserInfo(user_id):
     user = dbsession.query(User).filter_by(id=user_id)
     return user
+
 
 def getUserID(email):
     try:
@@ -116,7 +119,8 @@ def getUserID(email):
     except:
         return None
 
-#Login Condition
+
+# Login Condition
 def login_required(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
@@ -126,14 +130,16 @@ def login_required(func):
         return func(*args, **kwargs)
     return decorated_function
 
-#READ functions
+
+# READ functions
 @app.route('/')
 @app.route('/catalog/')
 def viewCatalog():
     """Reads categories from database and displays them."""
     category = dbsession.query(Category).all()
 
-    return render_template('catalog.html', category = category)
+    return render_template('catalog.html', category=category)
+
 
 @app.route('/catalog/<int:category_id>/')
 def viewCategory(category_id):
@@ -141,7 +147,8 @@ def viewCategory(category_id):
     category = dbsession.query(Category).filter_by(id=category_id).one()
     item = dbsession.query(Item).filter_by(category=category_id)
 
-    return render_template('category.html', category = category, item = item)
+    return render_template('category.html', category=category, item=item)
+
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/')
 def viewItem(category_id, item_id):
@@ -149,14 +156,14 @@ def viewItem(category_id, item_id):
     item = dbsession.query(Item).filter_by(id=item_id).one()
     category = dbsession.query(Category).filter_by(id=category_id).one()
 
-    return render_template('item.html', item = item, c = category)
+    return render_template('item.html', item=item, c=category)
 
-#functions requiring login functionality (CREATE, UPDATE, DELETE)
 
+# functions requiring login functionality (CREATE, UPDATE, DELETE)
 @app.route('/catalog/create', methods=['GET', 'POST'])
 @login_required
 def createItem():
-    categories =  dbsession.query(Category).all()
+    categories = dbsession.query(Category).all()
 
     if request.method == 'POST':
         newItem = Item(
@@ -170,12 +177,15 @@ def createItem():
         dbsession.flush()
         dbsession.commit()
         return redirect(
-            url_for('viewItem', item_id = newItem.id, category_id = newItem.category)
+            url_for('viewItem', item_id=newItem.id,
+                    category_id=newItem.category)
         )
     else:
-        return render_template('create.html', c = categories)
-    
-@app.route('/catalog/<int:category_id>/<int:item_id>/edit',methods=['GET', 'POST'])
+        return render_template('create.html', c=categories)
+
+
+@app.route('/catalog/<int:category_id>/<int:item_id>/edit',
+           methods=['GET', 'POST'])
 @login_required
 def editItem(category_id, item_id):
     item = dbsession.query(Item).filter_by(id=item_id).one()
@@ -188,7 +198,7 @@ def editItem(category_id, item_id):
             url_for('viewItem', category_id=category.id, item_id=item.id)
         )
 
-    if request.method  == 'POST':
+    if request.method == 'POST':
         if request.form['name']:
             item.name = request.form['name']
         if request.form['description']:
@@ -204,16 +214,18 @@ def editItem(category_id, item_id):
             url_for('viewItem', category_id=category.id, item_id=item.id)
         )
     else:
-        return render_template('edit.html', category=category, item=item, categories = c)
+        return render_template('edit.html', category=category,
+                               item=item, categories=c)
 
 
-@app.route('/catalog/<int:category_id>/<int:item_id>/delete', methods=['GET', 'POST'])
+@app.route('/catalog/<int:category_id>/<int:item_id>/delete',
+           methods=['GET', 'POST'])
 @login_required
 def deleteItem(category_id, item_id):
     item = dbsession.query(Item).filter_by(id=item_id).one()
     category = dbsession.query(Category).filter_by(id=item.category).one()
 
-    if int(session['uid']) != item.uid: 
+    if int(session['uid']) != item.uid:
         flash("You are not authorized to perform this action.")
         return redirect(
             url_for('viewItem', category_id=category.id, item_id=item.id)
@@ -228,8 +240,8 @@ def deleteItem(category_id, item_id):
         else:
             return render_template('delete.html', category=category, item=item)
 
-#API related functions and paths
 
+# API related functions and paths
 @app.route('/json/index')
 def catalogJSON():
     categories = dbsession.query(Category).all()
@@ -237,6 +249,7 @@ def catalogJSON():
     for c in categories:
         result.append(c.serialize)
     return jsonify(Categories=result)
+
 
 @app.route('/json/<int:category_id>')
 def categoryJSON(category_id):
@@ -246,14 +259,15 @@ def categoryJSON(category_id):
         result.append(i.serialize)
     return jsonify(Items=result)
 
+
 @app.route('/json/<int:category_id>/<int:item_id>')
 def itemJSON(category_id, item_id):
     item = dbsession.query(Item).filter_by(id=item_id).one()
     result = item.serialize
     return jsonify(Item=result)
 
+
 if __name__ == "__main__":
     app.secret_key = "peterparkerisspiderman"
-    app.debug = True
+    app.debug = False
     app.run(host='0.0.0.0', port=5000)
-    
