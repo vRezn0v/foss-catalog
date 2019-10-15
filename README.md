@@ -10,3 +10,7 @@ A catalog app built with Flask for Udacity FSND program. Covering Authentication
 - SQLAlchemy
 - Httplib2
 - Requests
+
+## Basic Setup:
+- Install the python dependencies: 
+``` $ pip install -r requirements.txt```
