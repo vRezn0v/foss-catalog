@@ -2,7 +2,7 @@
 A catalog app built with Flask for Udacity FSND program. Covering Authentication and Authorization and CRUD Operations courses.
 
 ## Requirements:
-- Python2 (2.7up)
+- Python 2.7
 - Vagrant
 
 ## Python Dependencies:
