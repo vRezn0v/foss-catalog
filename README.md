@@ -16,6 +16,7 @@ A catalog app built with Flask for Udacity FSND program. Covering Authentication
 ## Basic Setup:
 - Clone the repository: </br>
 ``` $ git clone https://github.com/vrezn0v/foss-catalog catalog```
+- ``` $ cd catalog```
 - Install the python dependencies (not required in FSND VM): </br> 
 ``` $ pip install -r requirements.txt```
 - Initialize the database by running: </br>
