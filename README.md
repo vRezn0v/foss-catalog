@@ -29,8 +29,9 @@ A catalog app built with Flask for Udacity FSND program. Covering Authentication
 - Open your preferred browser and go to http://localhost:5000
 
 ### Notes:
-The ```client_secrets.json``` file is preloaded, in case the client is revoked, obtain new Google Oauth API Keys from https://console.cloud.google.com/apis/credentials/oauthclient. </br>
+-The ```client_secrets.json``` file is preloaded, in case the client is revoked, obtain new Google Oauth API Keys from https://console.cloud.google.com/apis/credentials/oauthclient. </br>
 Download the client secrets and rename the file to ```client_secrets.json``` and place it in the repository root.
+- An arbitrary issue regarding login occurs at time, producing no output, a page reload resolves this.
 
 ## JSON API Endpoints
 ```http://localhost:5000/json/index``` : Shows all the categories. </br>
