@@ -21,7 +21,7 @@ app = Flask(__name__)
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 
-
+# Create Database Engine and disable threading for performance puropses
 engine = create_engine("sqlite:///catalog.db",
                        connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
@@ -42,6 +42,7 @@ def showLogin():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """Callback Function For Google Login"""
     if request.args.get('state') != session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -99,6 +100,7 @@ def not_found(error):
 
 # User related functions
 def createUser(session):
+    """Creates a new user in database"""
     newUser = User(name=session['name'],
                    email=session['email'])
     dbsession.add(newUser)
@@ -108,11 +110,13 @@ def createUser(session):
 
 
 def getUserInfo(user_id):
+    """Fetches UserInfo with id (redundant)"""
     user = dbsession.query(User).filter_by(id=user_id)
     return user
 
 
 def getUserID(email):
+    """Fetches UID with email"""
     try:
         user = dbsession.query(User).filter_by(email=email).one()
         return user.id
@@ -268,6 +272,6 @@ def itemJSON(category_id, item_id):
 
 
 if __name__ == "__main__":
-    app.secret_key = "peterparkerisspiderman"
+    app.secret_key = "peter parker is spiderman"
     app.debug = False
     app.run(host='0.0.0.0', port=5000)
