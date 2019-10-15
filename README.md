@@ -37,3 +37,8 @@ Download the client secrets and rename the file to ```client_secrets.json``` and
 ```http://localhost:5000/json/index``` : Shows all the categories. </br>
 ```http://localhost:5000/json/<int:category_id>``` : Shows items(apps) contained in a specific category. </br>
 ```http://localhost:5000/json/<int:category_id>/<int:item_id>``` : Shows details for the specified item. </br>
+
+### Sources: 
+- [Google's Oauth Documentation](https://developers.google.com/identity/sign-in/web/server-side-flow#step_5_sign_in_the_usera)
+- Head First Python (Book)
+- [View Decorators](https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/)
