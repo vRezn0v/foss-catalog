@@ -8,8 +8,7 @@ import random
 import string
 from functools import wraps
 
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
+from oauth2client import client
 
 import httplib2
 import json
@@ -46,88 +45,49 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     
+    if not request.headers.get('X-Requested-With'):
+        abort(403)
+
     code = request.data
 
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        'client_secrets.json',
-        scopes=['profile', 'email'],
-        redirect_uri='postmessage')
-    access_token = flow.fetch_token(code=code)
+    CLIENT_SECRET_FILE = 'client_secrets.json'
 
-    url = ('https://www.googleapis.com/oauth2/v2/tokeninfo?access_token=%s' % access_token)
-    h = httplib2.Http()
-    result = json.loads(h.request(url, 'GET')[1])
+    credentials = client.credentials_from_clientsecrets_and_code(
+        CLIENT_SECRET_FILE,
+        ['profile', 'email'],
+        code)
 
-    if result.get('error') is not None:
-        response = make_response(json.dumps(result.get('error')), 500)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+    http_auth = credentials.authorize(httplib2.Http())
 
-
-    if result['user_id'] != gplus_id:
-        response = make_response(json.dumps("Token's user ID doesn't match given user", 401))
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
-    if result['issued_to'] != CLIENT_ID:
-        response = make_response(json.dumps("Token's client ID does not match app's ID"), 401)
-        print "Token's client ID does not match app's"
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    
-
-    
-    stored_access_token = session.get('access_token')
-    stored_gplus_id = session.get('gplus_id')
-    if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected', 200))
-        response.headers['content-type'] = 'application/json'
-
-    session['access_token'] = credentials.access_token
-    session['gplus_id'] = gplus_id
-    
-    userinfo_url = "https://googleapis.com/oauth/userinfo"
-    params = {'access_token':credentials.access_token, 'alt':'json'}
-    answer = requests.get(userinfo_url, params=params)
-    data = answer.json()
-
-    
-    session['username'] = data["name"]
-    session['email'] = data["email"]
-    
+    session['name'] = credentials.id_token['name']
+    session['email'] = credentials.id_token['email']
+    #session['access']
+    user_id = getUserID(session['email'])
+    if not user_id:
+        user_id = createUser(session)
+    session['uid'] = user_id
+    print session.get('access_token')
     output = ''
     output += '<h1>Welcome, '
-    output += session['username']
+    output += session['name']
     output += '!</h1>'
-    flash("you are now logged in as %s"%session['username'])
-    return render_template('login.html', output = output)
-
+    flash("you are now logged in as %s"%session['name'])
+    return output
+    
+    
 #Logout Routes
-@app.route('/logout')
-def logout():
+@app.route('/gdisconnect')
+def gdisconnect():
     if session:
+        print 'User name is: '
+        print session['name']
+        del session['uid']
+        del session['name']
+        del session['email']
+        del session['state']
         session.clear()
-        flash("Logout Successful")
+        flash('Logged out successfully.')
         return redirect(url_for('viewCatalog'))
-    else:
-        flash("Error: No User Logged In.")
-        return redirect(url_for('viewCatalog'))
-
-@app.route('/revoke')
-def revoke():
-    if session:
-        fblogout()
-    return redirect(url_for('logout'))
-
-def fblogout():
-    facebook_id = session['facebook_id']
-    access_token = session['facebook_token']['access_token']
-    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (
-        facebook_id, access_token)
-    h = httplib2.Http()
-    flash("Logged out successfully.")
-    h.request(url, 'DELETE')
-
 
 
 #Error Handler
@@ -138,9 +98,8 @@ def not_found(error):
 #User related functions
 
 def createUser(session):
-    newUser =  User(name=session['username'],
-                    email=session['email'],
-                    picture=['picture'])
+    newUser =  User(name=session['name'],
+                    email=session['email'])
     dbsession.add(newUser)
     dbsession.commit()
     user = dbsession.query(User).filter_by(email=session['email']).one()
@@ -161,7 +120,7 @@ def getUserID(email):
 def login_required(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
-        if 'username' not in session:
+        if 'name' not in session:
             flash('Login Required to Continue.')
             return redirect(url_for('viewCatalog'))
         return func(*args, **kwargs)
@@ -201,7 +160,7 @@ def createItem():
 
     if request.method == 'POST':
         newItem = Item(
-            uid=session['facebook_id'], #TODO:Change to accept uid
+            uid=session['uid'],
             name=request.form['name'],
             category=int(request.form['category']),
             description=request.form['description'],
@@ -223,7 +182,7 @@ def editItem(category_id, item_id):
     category = dbsession.query(Category).filter_by(id=item.category).one()
     c = dbsession.query(Category).all()
 
-    if int(session['facebook_id']) != item.uid:
+    if int(session['uid']) != item.uid:
         flash("You are not authorized to perform this action.")
         return redirect(
             url_for('viewItem', category_id=category.id, item_id=item.id)
@@ -254,7 +213,7 @@ def deleteItem(category_id, item_id):
     item = dbsession.query(Item).filter_by(id=item_id).one()
     category = dbsession.query(Category).filter_by(id=item.category).one()
 
-    if int(session['facebook_id']) != item.uid: 
+    if int(session['uid']) != item.uid: 
         flash("You are not authorized to perform this action.")
         return redirect(
             url_for('viewItem', category_id=category.id, item_id=item.id)

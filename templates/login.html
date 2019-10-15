@@ -16,6 +16,8 @@
             });
             }
         </script>
+        <meta name="google-signin-client_id" content="{{client_id}}">
+
     </head>
     <body>
         <div id="header">
@@ -30,16 +32,37 @@
                 {% endif %}
             {% endwith %}
         </div>
-        <div id="content">
-
-            <button id="signinButton" class="btn btn-primary">Google Signin</button>
-            <div id="result"></div>
+        <div id="contentlog">
+          <h1>Log In to Catalog App with Google</h1>
+          <div id="my-signin2"></div>
+          <script>
+            function onSuccess(googleUser) {
+              console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+            }
+            function onFailure(error) {
+              console.log(error);
+            }
+            function renderButton() {
+              gapi.signin2.render('my-signin2', {
+                'scope': 'profile email',
+                'width': 240,
+                'height': 50,
+                'longtitle': true,
+                'theme': 'dark',
+                'onsuccess': onSuccess,
+                'onfailure': onFailure
+              });
+            }
+          </script>
+        
+          <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+                    <div id="result"></div>
 
             <script>
-                    $('#signinButton').click(function () {
+                    $('#my-signin2').click(function () {
                       function signInCallback(authResult) {
                         if (authResult['code']) {
-                          $('#signinButton').attr('style', 'display:none');
+                          $('#my-signin2').attr('style', 'display:none');
                           $.ajax({
                             type: 'POST',
                             url: '/gconnect?state={{STATE}}',

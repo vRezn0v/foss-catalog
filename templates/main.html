@@ -7,8 +7,11 @@
     <body>
         <div id="header">
             <h1><a href="{{ url_for('viewCatalog') }}">FOSS Catalog</a></h1>
+            {% if 'name' not in session %}
             <a href="{{url_for('showLogin')}}"><button class="op">Login</button></a>
-            <!-- Conditional login/create button-->
+            {% else %}
+            <a href="{{url_for('gdisconnect')}}"><button class="op">Logout</button></a>
+            {% endif %}
         </div>
         <div class="message">
             {% with messages = get_flashed_messages() %}
@@ -20,6 +23,9 @@
             {% endwith %}
         </div>
         <div id="content">
+                {% if 'name' in session %}
+                <p>Logged in as {{ session['name'] }}</p><br>
+                {% endif %}
             {% block content %}
             {% endblock %}
         </div>
